@@ -1,5 +1,4 @@
-import React from "react";
-import SpreadDemo from "./pages/SpreadDemo";
+import SpreadDemo from "pages/SpreadDemo";
 
 function App() {
   return <SpreadDemo></SpreadDemo>;

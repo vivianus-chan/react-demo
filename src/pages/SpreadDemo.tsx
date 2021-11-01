@@ -1,8 +1,8 @@
 import { Tabs } from "antd";
 import "assets/css/spread.scss";
 import { ExcelSheet } from "components/ExcelSheet";
+import { spreadData } from "data/spread";
 import { FC, useEffect, useState } from "react";
-import { spreadData } from "../data/spread";
 
 const tabs = [
   {

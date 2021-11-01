@@ -1,10 +1,10 @@
 import {
-    Column,
-    SpreadSheets,
-    Worksheet
+  Column,
+  SpreadSheets,
+  Worksheet
 } from "@grapecity/spread-sheets-react";
+import { spreadData } from "data/spread";
 import { FC, useEffect, useState } from "react";
-import { spreadData } from "../data/spread";
 // import GC from '@grapecity/spread-sheets';
 // GC.Spread.Sheets.LicenseKey = 'sds';
 
