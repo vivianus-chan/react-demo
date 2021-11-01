@@ -13,16 +13,18 @@ const { TabPane } = Tabs;
 
 const SpreadDemo: FC = () => {
   const [spreadBackColor, setSpreadBackColor] = useState("#fff");
-  const [sheetName, setSheetName] = useState("Goods List");
+  const [sheetName, setSheetName] = useState("假装数据");
   const [hostStyle, setHostStyle] = useState<any>({
     width: "100%",
     height: "100%",
   });
   const [columnWidth, setColumnWidth] = useState(100);
-  const [data, setData] = useState(spreadDate);
+  const [data, setData] = useState<any>(spreadDate);
   const [activeIndex, setActiveIndex] = useState("1");
 
-  useEffect(() => {});
+  useEffect(() => {
+    setData(spreadDate);
+  });
 
   return (
     <Tabs
@@ -30,8 +32,9 @@ const SpreadDemo: FC = () => {
       defaultActiveKey={activeIndex}
       onChange={(key) => setActiveIndex(key)}
       type="card"
+      animated
     >
-      <TabPane tab="Tab 1" key="1" className="height100">
+      <TabPane tab="页签 1" key="1" className="height100">
         <SpreadSheets backColor={spreadBackColor} hostStyle={hostStyle}>
           <Worksheet name={sheetName} dataSource={data}>
             <Column dataField="Name" width={300}></Column>
@@ -45,7 +48,7 @@ const SpreadDemo: FC = () => {
           </Worksheet>
         </SpreadSheets>
       </TabPane>
-      <TabPane tab="Tab 2" key="2" className="height100">
+      <TabPane tab="页签 2" key="2" className="height100">
         <SpreadSheets backColor={spreadBackColor} hostStyle={hostStyle}>
           <Worksheet name={sheetName} dataSource={data}>
             <Column dataField="Name" width={300}></Column>
