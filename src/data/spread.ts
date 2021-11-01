@@ -1,4 +1,4 @@
-export const spreadDate = [
+export const spreadData = [
     {
         Name: "Apple",
         Category: "Fruit",
