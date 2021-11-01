@@ -1,4 +1,5 @@
 // import GC from '@grapecity/spread-sheets';
+import "@/assets/css/spread.scss";
 import {
   Column,
   SpreadSheets,
@@ -6,9 +7,10 @@ import {
 } from "@grapecity/spread-sheets-react";
 import { Tabs } from "antd";
 import { FC, useEffect, useState } from "react";
-import "../assets/css/spread.scss";
 import { spreadDate } from "../data/spread";
+
 // GC.Spread.Sheets.LicenseKey = 'sds';
+
 const { TabPane } = Tabs;
 
 const SpreadDemo: FC = () => {

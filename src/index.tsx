@@ -1,8 +1,8 @@
+import '@/index.css';
 import '@grapecity/spread-sheets/styles/gc.spread.sheets.excel2013white.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
