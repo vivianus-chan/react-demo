@@ -1,6 +1,12 @@
 .tab-content {
-    height: 200px;
-    .ant-tabs-content-holder,.ant-tabs-content {
-        height: 100%;
-    }
+  margin: 0 10% !important;
+  height: 800px;
+  box-shadow: 0 0 20px #e3e3e3;
+  .ant-tabs-content-holder,
+  .ant-tabs-content {
+    height: 100%;
+  }
+  .container {
+    box-shadow: 0 0 20px grey;
+  }
 }

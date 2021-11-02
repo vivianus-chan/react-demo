@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@grapecity/spread-sheets-react": "^14.2.1",
+    "@grapecity/spread-sheets": "^14.2.2",
+    "@grapecity/spread-sheets-react": "^14.2.2",
+    "@grapecity/spread-sheets-resources-zh": "^14.2.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -19,7 +21,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "set PORT=3033 && react-scripts start",
+    "start": "set PORT=3033 && react-scripts --max_old_space_size=10240 start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
