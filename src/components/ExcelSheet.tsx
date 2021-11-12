@@ -11,7 +11,7 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
   const [sheetName, setSheetName] = useState("假装数据");
   const [hostStyle, setHostStyle] = useState<any>({
     width: "80%",
-    height: "80%",
+    height: "50%",
     margin: "30px auto",
   });
 
@@ -20,7 +20,9 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
   }, []);
 
   const initSpread = (spread: any) => {
+    console.log(11111111111,spread);
     setSpread(spread);
+    props.bindSpread?.(spread);
     spread.suspendPaint();
     let sheet = spread.getActiveSheet();
     // sheet.setRowHeight(col, 147);
@@ -74,8 +76,12 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
         name={sheetName}
         dataSource={props.data}
         autoGenerateColumns={false}
+        // selectionUnit={GC.Spread.Sheets.SelectionUnit.row}
+        // selectionBorderColor="red"
+        // selectionBackColor="transparent"
         // frozenRowCount={1}
         // frozenColumnCount={1}
+        // frozenlineColor="Transparent"
       >
         <Column dataField="Name" width={300}></Column>
         <Column dataField="Category" width={100}></Column>
@@ -88,4 +94,5 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
 
 interface IExcelSheetProps {
   data: any[];
+  bindSpread?: (spread: any) => void;
 }

@@ -12,6 +12,12 @@ export const spreadData = [
         "Shopping Place": "Other",
       },
       {
+        Name: "Banana",
+        Category: "Fruit",
+        Price: 3.6,
+        "Shopping Place": "lake",
+      },
+      {
         Name: "Tomato",
         Category: "Vegetable",
         Price: 3.21,
