@@ -1,4 +1,5 @@
 import GC from "@grapecity/spread-sheets";
+import { IEventTypeObj } from "@grapecity/spread-sheets-react";
 import { Button, Space, Tabs } from "antd";
 import "assets/css/spread.scss";
 import { ExcelSheet } from "components/ExcelSheet";
@@ -15,17 +16,17 @@ const tabs = [
 ];
 
 const SpreadDemo: FC = () => {
-  const [sheet, setSheet] = useState<GC.Spread.Sheets.Worksheet>();
   const [spread, setSpread] = useState<GC.Spread.Sheets.Workbook>();
+  const [sheet, setSheet] = useState<GC.Spread.Sheets.Worksheet>();
   const [data, setData] = useState<any>();
   const [activeIndex, setActiveIndex] = useState("1");
 
   useEffect(() => {
-    setData(spreadData);
+    setData(JSON.parse(JSON.stringify(spreadData)));
   }, []);
 
   const get = () => {
-    console.log(data);
+    console.log(data, spreadData);
     console.log(
       `总行数：：${sheet?.getRowCount()}，总列数：：${sheet?.getColumnCount()}`
     );
@@ -38,21 +39,47 @@ const SpreadDemo: FC = () => {
   };
 
   const addRowFromActive = () => {
+    const mergeColumnIndex = 1; // 需要合并的列下标
     const activeRowIndex = sheet?.getActiveRowIndex() ?? 0;
+    const activeColumnIndex = sheet?.getActiveColumnIndex() ?? 0;
     const activeItem = sheet?.getDataItem(activeRowIndex);
-    console.log(activeItem);
+    // const mergeCellItems =
+    //   sheet?.getSpans(
+    //     new GC.Spread.Sheets.Range(activeRowIndex, mergeColumnIndex, 1, 1)
+    //   ) ?? [];
+    // const mergeCellItem = mergeCellItems?.[0] ?? {
+    //   rowCount: 1,
+    //   row: activeRowIndex,
+    // };
+
+    //@ts-ignore
+    const mergeCellItem = sheet?.getSpan(activeRowIndex, mergeColumnIndex) ?? {
+      rowCount: 1,
+      row: activeRowIndex,
+    };
+
+    console.log(
+      activeRowIndex,
+      activeColumnIndex,
+      // mergeCellItems,
+      mergeCellItem
+    );
+
     spread?.suspendPaint();
     sheet?.addRows(activeRowIndex + 1, 1);
     sheet?.setArray(activeRowIndex + 1, 0, [
       [null, activeItem.Category, null, null],
     ]);
     sheet?.addSpan(
-      activeRowIndex,
-      1,
-      2,
-      1,
-      GC.Spread.Sheets.SheetArea.viewport
+      mergeCellItem?.row,
+      mergeColumnIndex,
+      mergeCellItem?.rowCount + 1,
+      1
     );
+    // .hAlign(GC.Spread.Sheets.HorizontalAlign.center);
+    sheet
+      ?.getCell(mergeCellItem.row, mergeCellItem.col)
+      .vAlign(GC.Spread.Sheets.VerticalAlign.center);
     spread?.resumePaint();
   };
 
@@ -70,8 +97,8 @@ const SpreadDemo: FC = () => {
   };
 
   const deleteColumn = () => {
-    const activeRowIndex = sheet?.getActiveRowIndex() ?? 0;
-    sheet?.deleteColumns(activeRowIndex, 1);
+    const activeColumnIndex = sheet?.getActiveColumnIndex() ?? 0;
+    sheet?.deleteColumns(activeColumnIndex, 1);
   };
 
   const setSel = () => {
@@ -79,12 +106,12 @@ const SpreadDemo: FC = () => {
   };
 
   const refresh = () => {
-    // sheet?.reset()
-    // console.log("刷新啦");
-    // spread?.suspendPaint();
-    // setData(spreadData);
-    spread?.refresh();
-    // spread?.resumePaint();
+    console.log("刷新啦");
+    spread?.suspendPaint();
+    sheet?.reset();
+    // spread?.refresh();
+    setData(JSON.parse(JSON.stringify(spreadData)));
+    spread?.resumePaint();
   };
 
   const merge = () => {
@@ -105,6 +132,25 @@ const SpreadDemo: FC = () => {
     spread?.resumePaint();
   };
 
+  const isCellinSpan = (row: number, col: number) => {
+    var ranges =
+      sheet?.getSpans(new GC.Spread.Sheets.Range(row, col, 1, 1)) ?? [];
+    console.log(ranges);
+    if (ranges.length) {
+      return true;
+    }
+    return false;
+  };
+
+  const valueChanged = (
+    type: IEventTypeObj,
+    args: GC.Spread.Sheets.IValueChangedEventArgs
+  ) => {
+    console.log(type, args);
+    const { row, col } = args;
+    console.log(isCellinSpan(row, col));
+  };
+
   return (
     <Tabs
       className="tab-content"
@@ -123,18 +169,26 @@ const SpreadDemo: FC = () => {
             <Button onClick={() => refresh()}>刷新</Button>
           </Space>
           <Space style={{ margin: "10px" }}>
-            <Button onClick={() => addRowFromActive()}>添加行</Button>
+            <Button onClick={() => addRowFromActive()}>
+              添加行并合并单元格
+            </Button>
             <Button onClick={() => addRowFromTail()}>末尾添加行</Button>
             <Button onClick={() => addColumnFromTail()}>末尾添加列</Button>
             <Button onClick={() => deleteRow()}>删除行</Button>
             <Button onClick={() => deleteColumn()}>删除列</Button>
+            <Button onClick={() => isCellinSpan(0, 1)}>
+              判断是否在合并单元格中
+            </Button>
           </Space>
 
           <ExcelSheet
             data={data}
-            bindSpread={(spread) => {
-              setSpread(spread);
-              setSheet(spread?.getActiveSheet());
+            spreadSheets={{
+              workbookInitialized: (spread) => {
+                setSpread(spread);
+                setSheet(spread?.getActiveSheet());
+              },
+              valueChanged,
             }}
           ></ExcelSheet>
         </Tabs.TabPane>

@@ -1,13 +1,13 @@
-import GC from "@grapecity/spread-sheets";
 import {
   Column,
   SpreadSheets,
-  Worksheet
+  SpreadSheetsProp,
+  Worksheet,
+  WorksheetProp
 } from "@grapecity/spread-sheets-react";
 import { useEffect, useState } from "react";
 
 export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
-  const [spread, setSpread] = useState(null);
   const [sheetName, setSheetName] = useState("假装数据");
   const [hostStyle, setHostStyle] = useState<any>({
     width: "80%",
@@ -16,51 +16,8 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
   });
 
   useEffect(() => {
-    console.log(props, spread);
+    console.log(props);
   }, []);
-
-  const initSpread = (spread: any) => {
-    console.log(11111111111,spread);
-    setSpread(spread);
-    props.bindSpread?.(spread);
-    spread.suspendPaint();
-    let sheet = spread.getActiveSheet();
-    // sheet.setRowHeight(col, 147);
-    // sheet.setColumnWidth(col, 147);
-    // console.log(spread.fromJSON(json))
-    var spreadNS = GC.Spread.Sheets;
-    // spread.setSheetCount(3);
-    // var self = this;
-    // spread.bind(spreadNS.Events.ActiveSheetChanged, function (e, args) {
-    //   var index = spread.getActiveSheetIndex();
-    //   self.activeSheetIndex = index;
-    // });
-    //   spread.bind(spreadNS.Events.CellClick, function (e, args) {
-    //     let sheetArea = args.sheetArea === 0 ? 'sheetCorner' : args.sheetArea === 1 ? 'columnHeader' : args.sheetArea === 2 ? 'rowHeader' : 'viewPort';
-    //     let log =
-    //         'SpreadEvent: ' + GC.Spread.Sheets.Events.CellClick + ' event called' + '\n' +
-    //         'sheetArea: ' + sheetArea + '\n' +
-    //         'row: ' + args.row + '\n' +
-    //         'col: ' + args.col;
-    //     self.setState({ eventLog: log });
-    // });
-    //   spread.bind(spreadNS.Events.EditStarting, function (e, args) {
-    //     let log =
-    //         'SpreadEvent: ' + GC.Spread.Sheets.Events.EditStarting + ' event called' + '\n' +
-    //         'row: ' + args.row + '\n' +
-    //         'column: ' + args.col;
-    //     self.setState({ eventLog: log });
-    // });
-    // spread.bind(spreadNS.Events.EditEnded, function (e, args) {
-    //     let log =
-    //         'SpreadEvent: ' + GC.Spread.Sheets.Events.EditEnded + ' event called' + '\n' +
-    //         'row: ' + args.row + '\n' +
-    //         'column: ' + args.col + '\n' +
-    //         'text: ' + args.editingText;
-    //     self.setState({ eventLog: log });
-    // });
-    spread.resumePaint();
-  };
 
   return (
     <SpreadSheets
@@ -70,7 +27,7 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
       newTabVisible={false}
       tabStripVisible={true}
       scrollbarMaxAlign={true}
-      workbookInitialized={(spread) => initSpread(spread)}
+      {...props.spreadSheets}
     >
       <Worksheet
         name={sheetName}
@@ -82,6 +39,7 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
         // frozenRowCount={1}
         // frozenColumnCount={1}
         // frozenlineColor="Transparent"
+        {...props.worksheet}
       >
         <Column dataField="Name" width={300}></Column>
         <Column dataField="Category" width={100}></Column>
@@ -94,5 +52,6 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
 
 interface IExcelSheetProps {
   data: any[];
-  bindSpread?: (spread: any) => void;
+  spreadSheets?: SpreadSheetsProp;
+  worksheet?: WorksheetProp;
 }

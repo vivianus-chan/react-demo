@@ -1216,21 +1216,21 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@grapecity/spread-sheets-react@^14.2.2":
+"@grapecity/spread-sheets-react@14.2.2":
   version "14.2.2"
   resolved "https://registry.yarnpkg.com/@grapecity/spread-sheets-react/-/spread-sheets-react-14.2.2.tgz#fd3d717bf6ca49537da3c18397d1800afbf6f5cb"
   integrity sha512-lJPjRBNW90mGZQHNz2QFZB4ZYcsDsOVViWG/gkEWRFFn9baZSisuvIgX36JDfSboBpA0++zlpLguls5IBJ5j3A==
   dependencies:
     "@grapecity/spread-sheets" "14.2.2"
 
-"@grapecity/spread-sheets-resources-zh@^14.2.2":
+"@grapecity/spread-sheets-resources-zh@14.2.2":
   version "14.2.2"
   resolved "https://registry.yarnpkg.com/@grapecity/spread-sheets-resources-zh/-/spread-sheets-resources-zh-14.2.2.tgz#46996db1c7425a48fd35bb4154781e49a4f0c391"
   integrity sha512-SvsSeM8UYOWRa7pr3ziW2xJiAm1goXBqXFPUZw7QVQV0AarwoGD0IpvcgSgpJt+VBVEc8Ep4t93Y5erDPyCc1g==
   dependencies:
     "@grapecity/spread-sheets" "14.2.2"
 
-"@grapecity/spread-sheets@14.2.2", "@grapecity/spread-sheets@^14.2.2":
+"@grapecity/spread-sheets@14.2.2":
   version "14.2.2"
   resolved "https://registry.yarnpkg.com/@grapecity/spread-sheets/-/spread-sheets-14.2.2.tgz#64313d2ad09499749e4a17df1025cb1b4717b792"
   integrity sha512-rMtNtQBTs2CbDPdLiZZf43dOENSCe7WF/g3MIXExSNdAnSN85oekdE2jkg2UmDoCXCap43bsOzZ4VuNgZh+p8g==
