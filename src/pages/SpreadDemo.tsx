@@ -108,10 +108,21 @@ const SpreadDemo: FC = () => {
 
   const refresh = () => {
     console.log("刷新啦");
+    const count1 = sheet?.getColumnCount() ?? 0; // reset前的列数
+    const ColumnWidth = [];
     spread?.suspendPaint();
+    for (let i = 0; i < count1; i++) {
+      ColumnWidth.push(sheet?.getColumnWidth(i));
+    }
     sheet?.reset();
-    // spread?.refresh();
     setData(JSON.parse(JSON.stringify(spreadData)));
+    const count2 = sheet?.getColumnCount() ?? 0; // 设置为初始值后，获取最新的列数不对
+    console.log(count2, ColumnWidth);
+    for (let i = 0; i < ColumnWidth.length; i++) {
+      console.log(i, ColumnWidth[i]);
+      sheet?.setColumnWidth(i, ColumnWidth[i]);
+    }
+    spread?.refresh();
     spread?.resumePaint();
   };
 

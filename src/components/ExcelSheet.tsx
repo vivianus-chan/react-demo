@@ -43,8 +43,8 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
       >
         <Column dataField="Name" width={300}></Column>
         <Column dataField="Category" width={100}></Column>
-        <Column dataField="Price" width={100} formatter="$#.00"></Column>
-        <Column dataField="Shopping Place" width={100}></Column>
+        <Column dataField="Price" width={110} formatter="$#.00"></Column>
+        <Column dataField="Shopping Place" width={120}></Column>
       </Worksheet>
     </SpreadSheets>
   );
