@@ -59,6 +59,7 @@ const SpreadDemo: FC = () => {
     };
 
     console.log(
+      "新增并合并单元格：：",
       activeRowIndex,
       activeColumnIndex,
       // mergeCellItems,
@@ -135,7 +136,7 @@ const SpreadDemo: FC = () => {
   const isCellinSpan = (row: number, col: number) => {
     var ranges =
       sheet?.getSpans(new GC.Spread.Sheets.Range(row, col, 1, 1)) ?? [];
-    console.log(ranges);
+    console.log(`${row}行和${col}列合并单元格区域：：`, ranges);
     if (ranges.length) {
       return true;
     }
@@ -148,7 +149,10 @@ const SpreadDemo: FC = () => {
   ) => {
     console.log(type, args);
     const { row, col } = args;
-    console.log(isCellinSpan(row, col));
+    console.log(
+      `valueChanged中判断${row}行和${col}列是否在合并单元格内：：`,
+      isCellinSpan(row, col)
+    );
   };
 
   return (
