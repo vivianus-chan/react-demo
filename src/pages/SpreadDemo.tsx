@@ -9,24 +9,25 @@ import { FC, useEffect, useState } from "react";
 const tabs = [
   {
     name: "页签 1",
+    sheetName: "假装数据",
   },
   {
     name: "页签 2",
+    sheetName: "东方数据",
   },
 ];
 
 const SpreadDemo: FC = () => {
   const [spread, setSpread] = useState<GC.Spread.Sheets.Workbook>();
   const [sheet, setSheet] = useState<GC.Spread.Sheets.Worksheet>();
-  const [data, setData] = useState<any>();
   const [activeIndex, setActiveIndex] = useState("1");
 
   useEffect(() => {
-    setData(JSON.parse(JSON.stringify(spreadData)));
-  }, []);
+    sheet?.setDataSource(JSON.parse(JSON.stringify(spreadData)));
+  }, [sheet]);
 
   const get = () => {
-    console.log(data, spreadData);
+    console.log(sheet?.getDataSource(), spreadData);
     console.log(
       `总行数：：${sheet?.getRowCount()}，总列数：：${sheet?.getColumnCount()}`
     );
@@ -107,29 +108,26 @@ const SpreadDemo: FC = () => {
   };
 
   const refresh = () => {
-    console.log("刷新啦");
     const count1 = sheet?.getColumnCount() ?? 0; // reset前的列数
-    const ColumnWidth = [];
+    const columnWidth = [];
     spread?.suspendPaint();
     for (let i = 0; i < count1; i++) {
-      ColumnWidth.push(sheet?.getColumnWidth(i));
+      columnWidth.push(sheet?.getColumnWidth(i));
     }
     sheet?.reset();
-    setData(JSON.parse(JSON.stringify(spreadData)));
+    sheet?.setDataSource(JSON.parse(JSON.stringify(spreadData)));
     const count2 = sheet?.getColumnCount() ?? 0; // 设置为初始值后，获取最新的列数不对
-    console.log(count2, ColumnWidth);
-    for (let i = 0; i < ColumnWidth.length; i++) {
-      console.log(i, ColumnWidth[i]);
-      sheet?.setColumnWidth(i, ColumnWidth[i]);
+    console.log(`新列数：${count2}`, columnWidth);
+    for (let i = 0; i < count2; i++) {
+      sheet?.setColumnWidth(i, columnWidth[i]);
     }
-    spread?.refresh();
     spread?.resumePaint();
   };
 
   const merge = () => {
-    console.log(data, spread);
     spread?.suspendPaint();
     let repeatCount = 1;
+    const data: any = sheet?.getDataSource() ?? [];
     data.forEach((x: any, index: number) => {
       console.log(555, x);
       if (x.Category) {
@@ -145,9 +143,10 @@ const SpreadDemo: FC = () => {
   };
 
   const isCellinSpan = (row: number, col: number) => {
+    console.log(sheet, spread, spread?.getActiveSheet());
     var ranges =
       sheet?.getSpans(new GC.Spread.Sheets.Range(row, col, 1, 1)) ?? [];
-    console.log(`${row}行和${col}列合并单元格区域：：`, ranges);
+    console.log(`(${row},${col})合并单元格区域：：`, ranges);
     if (ranges.length) {
       return true;
     }
@@ -161,7 +160,7 @@ const SpreadDemo: FC = () => {
     console.log(type, args);
     const { row, col } = args;
     console.log(
-      `valueChanged中判断${row}行和${col}列是否在合并单元格内：：`,
+      `valueChanged中判断(${row},${col})是否在合并单元格内：：`,
       isCellinSpan(row, col)
     );
   };
@@ -172,7 +171,7 @@ const SpreadDemo: FC = () => {
       defaultActiveKey={activeIndex}
       onChange={(key) => setActiveIndex(key)}
       type="card"
-      animated
+      // animated
     >
       {tabs.map((x, index) => (
         <Tabs.TabPane tab={x.name} key={index + 1} className="height100">
@@ -185,7 +184,7 @@ const SpreadDemo: FC = () => {
           </Space>
           <Space style={{ margin: "10px" }}>
             <Button onClick={() => addRowFromActive()}>
-              添加行并合并单元格
+              添加行并合并单元格{index+1}
             </Button>
             <Button onClick={() => addRowFromTail()}>末尾添加行</Button>
             <Button onClick={() => addColumnFromTail()}>末尾添加列</Button>
@@ -197,7 +196,7 @@ const SpreadDemo: FC = () => {
           </Space>
 
           <ExcelSheet
-            data={data}
+            sheetName={x.sheetName}
             spreadSheets={{
               workbookInitialized: (spread) => {
                 setSpread(spread);

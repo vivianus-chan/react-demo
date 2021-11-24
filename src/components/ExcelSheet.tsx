@@ -8,7 +8,6 @@ import {
 import { useEffect, useState } from "react";
 
 export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
-  const [sheetName, setSheetName] = useState("假装数据");
   const [hostStyle, setHostStyle] = useState<any>({
     width: "80%",
     height: "50%",
@@ -30,8 +29,7 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
       {...props.spreadSheets}
     >
       <Worksheet
-        name={sheetName}
-        dataSource={props.data}
+        name={props.sheetName}
         autoGenerateColumns={false}
         // selectionUnit={GC.Spread.Sheets.SelectionUnit.row}
         // selectionBorderColor="red"
@@ -51,7 +49,7 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
 };
 
 interface IExcelSheetProps {
-  data: any[];
+  sheetName?: string;
   spreadSheets?: SpreadSheetsProp;
   worksheet?: WorksheetProp;
 }
