@@ -37,9 +37,9 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
   };
 
   const getSel = () => {
-    console.log(
-      `row: ${sheet?.getActiveRowIndex()}，column：${sheet?.getActiveColumnIndex()}`
-    );
+    const activeRowIndex = sheet?.getActiveRowIndex() ?? 0;
+    const activeColumnIndex = sheet?.getActiveColumnIndex() ?? 0;
+    isCellinSpan(activeRowIndex, activeColumnIndex);
   };
 
   const addRowFromActive = () => {
@@ -145,13 +145,18 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
     spread?.resumePaint();
   };
 
-  const isCellinSpan = (row: number, col: number) => {
-    console.log(sheet, spread, spread?.getActiveSheet());
+  const isCellinSpan = (
+    row: number,
+    col: number,
+    sht?: GC.Spread.Sheets.Worksheet
+  ) => {
+    console.log(sheet, spread);
+    const sheet2 = sheet ?? sht;
     var ranges =
-      sheet?.getSpans(new GC.Spread.Sheets.Range(row, col, 1, 1)) ?? [];
+      sheet2?.getSpans(new GC.Spread.Sheets.Range(row, col, 1, 1)) ?? [];
     console.log(`(${row},${col})合并单元格区域：：`, ranges);
     if (ranges.length) {
-      return true;
+      return ranges;
     }
     return false;
   };
@@ -160,16 +165,28 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
     type: IEventTypeObj,
     args: GC.Spread.Sheets.IValueChangedEventArgs
   ) => {
-    console.log(type, args);
-    const { row, col } = args;
-    console.log(
-      `valueChanged中判断(${row},${col})是否在合并单元格内：：`,
-      isCellinSpan(row, col)
-    );
+    // console.log(type, args);
+    const { row, col, sheet, newValue } = args;
+    const spanArea = isCellinSpan(row, col, sheet);
+    if (spanArea) {
+      for (
+        let i = spanArea[0].row;
+        i < spanArea[0].row + spanArea[0].rowCount;
+        i++
+      ) {
+        for (
+          let j = spanArea[0].col;
+          j < spanArea[0].col + spanArea[0].colCount;
+          j++
+        ) {
+          sheet.setValue(i, j, newValue);
+        }
+      }
+    }
   };
 
   const workbookInitialized = (spread: GC.Spread.Sheets.Workbook) => {
-    console.log('初始化')
+    console.log("初始化");
     setSpread(spread);
     setSheet(spread?.getActiveSheet());
   };
@@ -182,16 +199,15 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
         <Button onClick={() => addColumnFromTail()}>末尾添加列</Button>
         <Button onClick={() => deleteRow()}>删除行</Button>
         <Button onClick={() => deleteColumn()}>删除列</Button>
-        <Button onClick={() => getSel()}>获取选中</Button>
+        <Button onClick={() => getSel()}>
+          获取选中并判断是否在合并单元格内
+        </Button>
         <Button onClick={() => setSel()}>选中cell</Button>
         <Button onClick={() => refresh()}>刷新</Button>
       </Space>
       <Space style={{ margin: "10px" }}>
         <Button onClick={() => addRowFromActive()}>添加行并合并单元格</Button>
         <Button onClick={() => merge()}>合并行</Button>
-        <Button onClick={() => isCellinSpan(0, 1)}>
-          判断是否在合并单元格中
-        </Button>
       </Space>
       <SpreadSheets
         backColor="#fff"
