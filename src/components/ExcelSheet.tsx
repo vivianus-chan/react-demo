@@ -1,6 +1,5 @@
 import GC from "@grapecity/spread-sheets";
 import {
-  Column,
   IEventTypeObj,
   SpreadSheets,
   SpreadSheetsProp,
@@ -9,6 +8,7 @@ import {
 } from "@grapecity/spread-sheets-react";
 import { Button, Space } from "antd";
 import "assets/css/spread.scss";
+import { column } from "data/column";
 import { spreadData } from "data/spread";
 import { useEffect, useState } from "react";
 
@@ -20,14 +20,6 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
     height: "50%",
     margin: "30px auto",
   });
-
-  useEffect(() => {
-    console.log(props);
-  }, []);
-
-  useEffect(() => {
-    sheet?.setDataSource(JSON.parse(JSON.stringify(spreadData)));
-  }, [sheet]);
 
   const get = () => {
     console.log(sheet?.getDataSource(), spreadData);
@@ -184,12 +176,25 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
       }
     }
   };
-
+ 
   const workbookInitialized = (spread: GC.Spread.Sheets.Workbook) => {
     console.log("初始化");
     setSpread(spread);
     setSheet(spread?.getActiveSheet());
   };
+
+  useEffect(() => {
+    console.log(props);
+  }, []);
+
+  useEffect(() => {
+    const { sheetName } = props;
+    column.forEach((x) => {
+      x.displayName = x.displayName.replace(/（.*?）/g, `（${sheetName}）`);
+    });
+    sheet?.bindColumns(column);
+    sheet?.setDataSource(JSON.parse(JSON.stringify(spreadData)));
+  }, [sheet]);
 
   return (
     <>
@@ -227,15 +232,11 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
           // selectionBorderColor="red"
           // selectionBackColor="transparent"
           // frozenRowCount={1}
-          // frozenColumnCount={1}
-          // frozenlineColor="Transparent"
+          frozenColumnCount={1}
+          // frozenTrailingColumnCount={1}
+          frozenlineColor="Transparent"
           {...props.worksheet}
-        >
-          <Column dataField="Name" width={300}></Column>
-          <Column dataField="Category" width={100}></Column>
-          <Column dataField="Price" width={110} formatter="$#.00"></Column>
-          <Column dataField="Shopping Place" width={120}></Column>
-        </Worksheet>
+        ></Worksheet>
       </SpreadSheets>
     </>
   );
