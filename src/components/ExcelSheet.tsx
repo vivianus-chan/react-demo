@@ -3,8 +3,7 @@ import {
   IEventTypeObj,
   SpreadSheets,
   SpreadSheetsProp,
-  Worksheet,
-  WorksheetProp
+  Worksheet
 } from "@grapecity/spread-sheets-react";
 import { Button, Space } from "antd";
 import "assets/css/spread.scss";
@@ -102,23 +101,6 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
     sheet?.setActiveCell(1, 3);
   };
 
-  const refresh = () => {
-    const count1 = sheet?.getColumnCount() ?? 0; // reset前的列数
-    const columnWidth = [];
-    spread?.suspendPaint();
-    for (let i = 0; i < count1; i++) {
-      columnWidth.push(sheet?.getColumnWidth(i));
-    }
-    sheet?.reset();
-    sheet?.setDataSource(JSON.parse(JSON.stringify(spreadData)));
-    const count2 = sheet?.getColumnCount() ?? 0; // 设置为初始值后，获取最新的列数不对
-    console.log(`新列数：${count2}`, columnWidth);
-    for (let i = 0; i < count2; i++) {
-      sheet?.setColumnWidth(i, columnWidth[i]);
-    }
-    spread?.resumePaint();
-  };
-
   const merge = () => {
     spread?.suspendPaint();
     let repeatCount = 1;
@@ -176,9 +158,28 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
       }
     }
   };
- 
+
+  const refresh = () => {
+    sheet?.reset();
+    initSpread();
+  };
+
+  const initSpread = () => {
+    spread?.suspendPaint();
+    const { sheetName } = props;
+    column.forEach((x) => {
+      x.displayName = x.displayName.replace(/（.*?）/g, `（${sheetName}）`);
+    });
+    console.log(column);
+    sheet?.setDataSource(JSON.parse(JSON.stringify(spreadData[sheetName])));
+    sheet?.bindColumns(column);
+    sheet?.frozenColumnCount(1);
+    sheet!.options.frozenlineColor = "Transparent";
+    spread?.resumePaint();
+  };
+
   const workbookInitialized = (spread: GC.Spread.Sheets.Workbook) => {
-    console.log("初始化");
+    console.log("workbookInitialized");
     setSpread(spread);
     setSheet(spread?.getActiveSheet());
   };
@@ -188,12 +189,7 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    const { sheetName } = props;
-    column.forEach((x) => {
-      x.displayName = x.displayName.replace(/（.*?）/g, `（${sheetName}）`);
-    });
-    sheet?.bindColumns(column);
-    sheet?.setDataSource(JSON.parse(JSON.stringify(spreadData)));
+    sheet && initSpread();
   }, [sheet]);
 
   return (
@@ -225,25 +221,13 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
         valueChanged={valueChanged}
         {...props.spreadSheets}
       >
-        <Worksheet
-          name={props.sheetName}
-          autoGenerateColumns={false}
-          // selectionUnit={GC.Spread.Sheets.SelectionUnit.row}
-          // selectionBorderColor="red"
-          // selectionBackColor="transparent"
-          // frozenRowCount={1}
-          frozenColumnCount={1}
-          // frozenTrailingColumnCount={1}
-          frozenlineColor="Transparent"
-          {...props.worksheet}
-        ></Worksheet>
+        <Worksheet name={props.sheetName}></Worksheet>
       </SpreadSheets>
     </>
   );
 };
 
 interface IExcelSheetProps {
-  sheetName?: string;
+  sheetName: string;
   spreadSheets?: SpreadSheetsProp;
-  worksheet?: WorksheetProp;
 }
