@@ -18,19 +18,21 @@ const SpreadDemo: FC = () => {
   const [activeIndex, setActiveIndex] = useState("1");
 
   return (
-    <Tabs
-      className="tab-content"
-      defaultActiveKey={activeIndex}
-      onChange={(key) => setActiveIndex(key)}
-      type="card"
-      animated
-    >
-      {tabs.map((x, index) => (
-        <Tabs.TabPane tab={x.name} key={index + 1} className="height100">
-          <ExcelSheet sheetName={x.sheetName} spreadSheets={{}}></ExcelSheet>
-        </Tabs.TabPane>
-      ))}
-    </Tabs>
+    <>
+      <Tabs
+        className="tab-content"
+        defaultActiveKey={activeIndex}
+        onChange={(key) => setActiveIndex(key)}
+        type="card"
+        animated
+      >
+        {tabs.map((x, index) => (
+          <Tabs.TabPane tab={x.name} key={index + 1} className="height100">
+            <ExcelSheet sheetName={x.sheetName} spreadSheets={{}}></ExcelSheet>
+          </Tabs.TabPane>
+        ))}
+      </Tabs>
+    </>
   );
 };
 

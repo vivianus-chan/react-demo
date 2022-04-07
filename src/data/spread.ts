@@ -6,6 +6,7 @@ export const spreadData: { [key: string]: any[] } = {
       Price: 1,
       Count: 2,
       "Shopping Place": "Wal-Mart",
+      level: 0,
     },
     {
       Name: "Potato",
@@ -13,6 +14,7 @@ export const spreadData: { [key: string]: any[] } = {
       Price: 2.01,
       Count: 4,
       "Shopping Place": "Other",
+      level: 1,
     },
     {
       Name: "Banana",
@@ -20,6 +22,7 @@ export const spreadData: { [key: string]: any[] } = {
       Price: 3.6,
       Count: 6,
       "Shopping Place": "lake",
+      level: 2,
     },
     {
       Name: "Tomato",
@@ -27,6 +30,7 @@ export const spreadData: { [key: string]: any[] } = {
       Price: 3.21,
       Count: 66,
       "Shopping Place": "Other",
+      level: 3,
     },
     {
       Name: "Sandwich",
@@ -34,6 +38,7 @@ export const spreadData: { [key: string]: any[] } = {
       Price: 2,
       Count: 29,
       "Shopping Place": "Wal-Mart",
+      level: 2,
     },
     {
       Name: "Hamburger",
@@ -41,6 +46,7 @@ export const spreadData: { [key: string]: any[] } = {
       Price: 2,
       Count: 34,
       "Shopping Place": "Wal-Mart",
+      level: 3,
     },
     {
       Name: "Grape",
@@ -48,6 +54,7 @@ export const spreadData: { [key: string]: any[] } = {
       Price: 4,
       Count: 5,
       "Shopping Place": "Sun Store",
+      level: 4,
     },
   ],
   东方数据: [

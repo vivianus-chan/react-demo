@@ -10,6 +10,24 @@ import "assets/css/spread.scss";
 import { column } from "data/column";
 import { spreadData } from "data/spread";
 import { useEffect, useState } from "react";
+const buttonStyle = new GC.Spread.Sheets.CellTypes.Button();
+const buttonStyle1 = new GC.Spread.Sheets.Style();
+buttonStyle1.cellButtons = [
+  {
+    caption: "选择",
+    useButtonStyle: true,
+    visibility: GC.Spread.Sheets.ButtonVisibility.onSelected,
+    command: (
+      sheet: GC.Spread.Sheets.Worksheet,
+      row: number,
+      col: number,
+      option: any
+    ) => {},
+  },
+];
+const defaultStyle = new GC.Spread.Sheets.Style();
+// defaultStyle.hAlign = GC.Spread.Sheets.HorizontalAlign.center;
+defaultStyle.vAlign = GC.Spread.Sheets.VerticalAlign.center;
 
 export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
   const [spread, setSpread] = useState<GC.Spread.Sheets.Workbook>();
@@ -80,7 +98,14 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
   };
 
   const addRowFromTail = () => {
-    sheet?.addRows(sheet.getRowCount(), 1);
+    const rowCount = sheet?.getRowCount() ?? 0;
+    sheet?.addRows(rowCount, 1);
+    sheet?.setFormula(
+      rowCount,
+      2,
+      `=SUM(C1:C${rowCount})`,
+      GC.Spread.Sheets.SheetArea.viewport
+    );
   };
 
   const addColumnFromTail = () => {
@@ -117,6 +142,28 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
       }
     });
     spread?.resumePaint();
+  };
+
+  const copy = () => {
+    const activeRowIndex = sheet?.getActiveRowIndex() ?? 0;
+    const activeColumnIndex = sheet?.getActiveColumnIndex() ?? 0;
+    // sheet?.addRows(activeRowIndex + 1, 6);
+    sheet?.copyTo(
+      activeRowIndex,
+      -1,
+      activeRowIndex + 2,
+      -1,
+      2,
+      -1,
+      GC.Spread.Sheets.CopyToOptions.all
+    );
+  };
+
+  const collapsed = () => {
+    const CollapsedArr = sheet?.outlineColumn.getCollapsed();
+    CollapsedArr.forEach((x: boolean, i: number) => {
+      sheet?.outlineColumn.setCollapsed(i, false);
+    });
   };
 
   const isCellinSpan = (
@@ -171,11 +218,41 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
       x.displayName = x.displayName.replace(/（.*?）/g, `（${sheetName}）`);
     });
     console.log(column);
-    sheet?.setDataSource(JSON.parse(JSON.stringify(spreadData[sheetName])));
+    const data: any[] = spreadData[sheetName];
+    for (var r = 0; r < data.length; r++) {
+      sheet?.getCell(r, 0).textIndent(data[r].level);
+    }
+    sheet?.setDataSource(JSON.parse(JSON.stringify(data)));
     sheet?.bindColumns(column);
+    initOutlineColumn();
     sheet?.frozenColumnCount(1);
+    // for (var r = 0; r < data.length; r++) {
+    //   if (data[r].level === 2) {
+    //     sheet?.outlineColumn.setCollapsed(r, true);
+    //   }
+    // }
     sheet!.options.frozenlineColor = "Transparent";
+    // spread!.options.allowUserEditFormula = false;
+    sheet?.setStyle(0, 0, buttonStyle1);
+    sheet?.setRowHeight(0, 30, GC.Spread.Sheets.SheetArea.colHeader);
+    //set default row height and column width
+    sheet!.defaults.rowHeight = 45;
+    // sheet!.defaults.colWidth = 150;
+    sheet?.setDefaultStyle(defaultStyle, GC.Spread.Sheets.SheetArea.viewport);
     spread?.resumePaint();
+  };
+
+  const initOutlineColumn = () => {
+    const { sheetName } = props;
+    const data: any[] = spreadData[sheetName];
+    sheet?.outlineColumn.options({
+      columnIndex: 0,
+      showImage: false,
+      showCheckBox: false,
+      maxLevel: 10,
+    });
+    sheet?.showRowOutline(false);
+    sheet?.outlineColumn.refresh();
   };
 
   const workbookInitialized = (spread: GC.Spread.Sheets.Workbook) => {
@@ -184,8 +261,20 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
     setSheet(spread?.getActiveSheet());
   };
 
+  const splitSum = (cells: string, count = 3) => {
+    const arr = cells.split(",");
+    const res: any = [];
+    for (let i = 0; i < arr.length; i += count) {
+      res.push(arr.slice(i, i + count));
+    }
+    const sumStr = res?.map((cur: string) => `SUM(${cur})`).join("+");
+    console.log(arr, res, sumStr);
+    return sumStr;
+  };
+
   useEffect(() => {
     console.log(props);
+    splitSum("1,2,3,4,5,6,7,8,9,10");
   }, []);
 
   useEffect(() => {
@@ -209,6 +298,8 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
       <Space style={{ margin: "10px" }}>
         <Button onClick={() => addRowFromActive()}>添加行并合并单元格</Button>
         <Button onClick={() => merge()}>合并行</Button>
+        <Button onClick={() => copy()}>复制行</Button>
+        <Button onClick={() => collapsed()}>展开行</Button>
       </Space>
       <SpreadSheets
         backColor="#fff"
@@ -221,7 +312,7 @@ export const ExcelSheet: React.FC<IExcelSheetProps> = (props) => {
         valueChanged={valueChanged}
         {...props.spreadSheets}
       >
-        <Worksheet name={props.sheetName}></Worksheet>
+        <Worksheet name={props.sheetName} isProtected={false}></Worksheet>
       </SpreadSheets>
     </>
   );
